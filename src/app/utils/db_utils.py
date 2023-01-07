@@ -8,5 +8,7 @@ def get_db():
     
     try: 
         yield db
+    except:
+        db.rollback()
     finally:
         db.close()
