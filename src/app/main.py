@@ -1,6 +1,5 @@
 from fastapi import FastAPI, status
-from src.app.database import SQLALCHEMY_DB_URL
-
+from src.auth.auth_router import user_router
 
 
 
@@ -9,7 +8,7 @@ from src.app.database import SQLALCHEMY_DB_URL
 
 app = FastAPI()
 
-
+app.include_router(user_router)
 
 
 

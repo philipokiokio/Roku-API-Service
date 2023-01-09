@@ -15,5 +15,5 @@ class RefreshToken(AbstractBase):
     __tablename__ = "user_refresh_token"
     user_id = Column(ForeignKey("users.id", ondelete="CASCADE"), nullable= False)
     token = Column(String, nullable= False)
-    user = relationship("User")
+    user = relationship("User", passive_deletes= True)
 

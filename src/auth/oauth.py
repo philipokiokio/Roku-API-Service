@@ -2,12 +2,10 @@ from src.app.config import auth_settings
 from jose import JWTError,jwt
 from datetime import datetime, timedelta
 from fastapi import Depends, status, HTTPException, Header
-from app.utils.db_utils import get_db
 from sqlalchemy.orm import Session
 from fastapi.security.oauth2 import OAuth2PasswordBearer
-from .schemas import TokenData
-from .models import User, RefreshToken
-
+from src.auth.schemas import TokenData
+from src.auth.auth_repository import user_repo, token_repo
 
 oauth_schemes = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
@@ -17,17 +15,17 @@ access_secret_key = auth_settings.access_secret_key
 refresh_secret_key = auth_settings.refresh_secret_key
 access_time_exp = auth_settings.access_time_exp
 refresh_time_exp = auth_settings.refresh_time_exp
-algorithm = auth_settings.algorithm
-
+Algorithm = auth_settings.algorithm
 
 
 
 
 def create_access_token(data:dict)->str:
+    
     to_encode = data.copy()
     expire = datetime.now() + timedelta(minutes = access_time_exp)
-    to_encode = to_encode.update({"exp": expire})
-    encode_jwt = jwt.encode(to_encode,access_secret_key, algorithm=algorithm)
+    to_encode["exp"]=  expire
+    encode_jwt = jwt.encode(to_encode,access_secret_key, algorithm=Algorithm)
     return encode_jwt
 
     
@@ -35,8 +33,8 @@ def create_access_token(data:dict)->str:
 def create_refresh_token(data:dict)->str:
     to_encode = data.copy()
     expire = datetime.now() + timedelta(minutes = refresh_time_exp)
-    to_encode = to_encode.update({"exp": expire})
-    refresh_encode_jwt = jwt.encode(to_encode,refresh_secret_key, algorithm=algorithm)
+    to_encode["exp"]=  expire
+    refresh_encode_jwt = jwt.encode(to_encode,refresh_secret_key, algorithm=Algorithm)
     return refresh_encode_jwt
 
 
@@ -61,7 +59,7 @@ def refresh_exception():
     
     
     
-def verify_refresh_token(refresh_tok:str = Header(), db:Session = Depends(get_db))->str:
+def verify_refresh_token(refresh_tok:str = Header())->str:
     
     try: 
         decoded_data = jwt.decode(refresh_tok, refresh_secret_key, algorithms=[algorithm])
@@ -72,11 +70,7 @@ def verify_refresh_token(refresh_tok:str = Header(), db:Session = Depends(get_db
     except JWTError:
         raise refresh_exception()
 
-    refresh_token_check = db.query(
-        RefreshToken
-    ).filter(
-        RefreshToken.token == refresh_tok
-    ).first()
+    refresh_token_check = token_repo.get_token_by_tok(refresh_tok)
     
     if not refresh_token_check:
         refresh_exception()
@@ -93,7 +87,7 @@ def verify_refresh_token(refresh_tok:str = Header(), db:Session = Depends(get_db
         
     
     
-def get_current_user(token:str = Depends(oauth_schemes),db:Session = Depends(get_db)):
+def get_current_user(token:str = Depends(oauth_schemes)):
     
     try:
         decode_data= jwt.decode(token, access_secret_key, algorithms=[algorithm])
@@ -107,7 +101,7 @@ def get_current_user(token:str = Depends(oauth_schemes),db:Session = Depends(get
     except JWTError:
         credential_exception()
     
-    user_check = db.query(User).filter(User.email == token_data.email).first()
+    user_check = user_repo.get_user(token_data.email)
     if not user_check:
         credential_exception()
     
