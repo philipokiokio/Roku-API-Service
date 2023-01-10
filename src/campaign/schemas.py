@@ -58,19 +58,3 @@ class MessageListCampaignResponse(ResponseModel):
 class SendCampaignInvite(AbstractModel):
     email: EmailStr
     role: RoleOptions
-
-
-class UpdateRole(AbstractModel):
-    role: RoleOptions
-
-
-class CampaignTeamMemberResponse(User):
-    campaign: CampaignORMResp
-
-
-class MessageCampaignTeamResp(ResponseModel):
-    data: CampaignTeamMemberResponse
-
-
-class MessageListCampaignTeamResp(ResponseModel):
-    data: List[CampaignTeamMemberResponse]

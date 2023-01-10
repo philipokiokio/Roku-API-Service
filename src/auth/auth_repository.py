@@ -18,7 +18,7 @@ class UserRepo(BaseRepo):
         self.db.refresh(new_user)
         return new_user
 
-    def delete(self, user: any) -> bool:
+    def delete(self, user: User) -> bool:
         resp = False
 
         self.db.delete(user)
