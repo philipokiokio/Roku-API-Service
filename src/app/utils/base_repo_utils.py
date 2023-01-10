@@ -3,18 +3,9 @@ from src.app.database import SessionLocal
 from sqlalchemy.orm import Session
 
 
-
-
-
 class BaseRepo:
-    
-    
     def __init__(self):
-        self.db:Session =SessionLocal()
-        
-        
-        
+        self.db: Session = SessionLocal()
+
+
 base_repo = BaseRepo()
-
-
-print(base_repo)

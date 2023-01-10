@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends
 from src.auth import schemas
 from src.auth.auth_service import user_service
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from src.auth.oauth import get_current_user
+from src.auth.oauth import get_current_user, verify_refresh_token
 
 user_router = APIRouter(prefix="/api/v1/auth", tags={"User Authentication"})
 
@@ -67,3 +67,13 @@ def delete_user(current_user: dict = Depends(get_current_user)):
 
     user_service.delete(current_user)
     return {"status": status.HTTP_204_NO_CONTENT}
+
+
+@user_router.get("/refresh/", status_code=status.HTTP_200_OK)
+def get_new_token(new_access_token: str = Depends(verify_refresh_token)):
+
+    return {
+        "message": "New access token created successfully",
+        "token": new_access_token,
+        "status": status.HTTP_200_OK,
+    }

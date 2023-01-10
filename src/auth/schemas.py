@@ -2,61 +2,62 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
 
+
 class TokenData(BaseModel):
-    email:EmailStr
-    
-    
+    email: EmailStr
+
+
 class user_create(BaseModel):
-    first_name:str
-    last_name:str
-    email:EmailStr
-    password:str
-    
-    
-    
+    first_name: str
+    last_name: str
+    email: EmailStr
+    password: str
+
+
 class UserResponse(BaseModel):
-    first_name:str
-    last_name:str
-    email:EmailStr
-    date_created:datetime
-    
+    first_name: str
+    last_name: str
+    email: EmailStr
+    date_created: datetime
+
     class Config:
-        orm_mode= True
-        
+        orm_mode = True
+
+
 class UserUpdate(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     email: Optional[EmailStr]
-    
-    
-        
+
+
 class MessageUserResponse(BaseModel):
-    message:str
-    data:UserResponse
-    status:int
-    
+    message: str
+    data: UserResponse
+    status: int
+
+
 class Token(BaseModel):
-    token:str 
-    
-        
+    token: str
+
+
 class AccessToken(Token):
-    type:str
-    
+    type: str
+
+
 class RefreshToken(Token):
-    header:str
+    header: str
 
 
 class LoginResponse(BaseModel):
     data: UserResponse
     access_token: AccessToken
     refresh_token: RefreshToken
-    
+
     class Config:
-        orm_mode=True
-        
+        orm_mode = True
+
+
 class MessageLoginResponse(BaseModel):
-    message:str
+    message: str
     data: LoginResponse
-    status:int
-    
-    
+    status: int
