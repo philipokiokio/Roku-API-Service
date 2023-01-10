@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from app.config import mail_settings, EmailStr
 
@@ -19,7 +20,7 @@ conf = ConnectionConfig(
 
 
 async def send_mail(
-    recieptients: EmailStr, subject: str, body: dict, template_name: str
+    recieptients: List[EmailStr], subject: str, body: dict, template_name: str
 ) -> bool:
 
     message = MessageSchema(
