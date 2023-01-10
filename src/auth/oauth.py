@@ -90,7 +90,7 @@ def verify_refresh_token(refresh_tok:str = Header())->str:
 def get_current_user(token:str = Depends(oauth_schemes)):
     
     try:
-        decode_data= jwt.decode(token, access_secret_key, algorithms=[algorithm])
+        decode_data= jwt.decode(token, access_secret_key, algorithms=[Algorithm])
         email = decode_data.get("email")
         if email is None:
             credential_exception()

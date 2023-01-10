@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-
+from typing import Optional
 
 class TokenData(BaseModel):
     email:EmailStr
@@ -22,7 +22,14 @@ class UserResponse(BaseModel):
     
     class Config:
         orm_mode= True
+        
+class UserUpdate(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: Optional[EmailStr]
     
+    
+        
 class MessageUserResponse(BaseModel):
     message:str
     data:UserResponse
