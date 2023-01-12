@@ -7,11 +7,16 @@ class WorkspaceCreate(AbstractModel):
     name: str
 
 
+class WorkMember(AbstractModel):
+    role: str
+    member: User
+
+
 class WorkspaceResponse(WorkspaceCreate):
     id: int
     slug: str
     creator: User
-    members: List[User] | None
+    members: List[WorkMember] | None
 
 
 class MessageWorkspaceResp(ResponseModel):

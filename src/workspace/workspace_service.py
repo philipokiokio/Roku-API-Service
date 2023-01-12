@@ -40,13 +40,14 @@ class WorkspaceService:
         workspace_dict = workspace_create.dict()
         workspace_dict["slug"] = self.workspace_repo.slugger(workspace_create.name)
         workspace_dict["created_by"] = user_id
+        workspace_dict["is_premium"] = False
 
         workspace = self.workspace_repo.create_workspace(workspace_dict)
 
         workspace_member_dict = {
             "workspace_id": workspace.id,
             "member_id": user_id,
-            "role": RoleOptions.admin,
+            "role": RoleOptions.admin.value,
         }
         self.workspace_member_repo.create_workspace_member(workspace_member_dict)
         workspace = self.orm_call(workspace)

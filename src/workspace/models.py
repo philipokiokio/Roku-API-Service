@@ -9,12 +9,12 @@ class Workspace(AbstractBase):
     name = Column(String, nullable=False)
     slug = Column(String, nullable=False)
     created_by = Column(
-        Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     is_premium = Column(Boolean, server_default=text("false"))
     revoke_link = Column(Boolean, server_default=text("false"))
     creator = relationship("User")
-    workspace_member = relationship("WorkspaceMember", backref="member")
+    workspace_member = relationship("WorkspaceMember", back_populates="workspace")
 
 
 class WorkspaceMember(AbstractBase):
@@ -23,9 +23,8 @@ class WorkspaceMember(AbstractBase):
         Integer, ForeignKey("workspace.id", ondelete="CASCADE"), nullable=False
     )
     member_id = Column(
-        Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     role = Column(String, nullable=False)
-
     member = relationship("User")
     workspace = relationship("Workspace")
