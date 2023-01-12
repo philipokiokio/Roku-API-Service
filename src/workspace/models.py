@@ -8,11 +8,13 @@ class Workspace(AbstractBase):
     __tablename__ = "workspace"
     name = Column(String, nullable=False)
     slug = Column(String, nullable=False)
-    created_by = Column(Integer, ForeignKey("user.id", ondelete="NULL"), nullable=True)
+    created_by = Column(
+        Integer, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
+    )
     is_premium = Column(Boolean, server_default=text("false"))
-    revoke_link = Column(Boolean, server_defaul=text("false"))
+    revoke_link = Column(Boolean, server_default=text("false"))
     creator = relationship("User")
-    workspace_member = relationship("WorkspaceMember", back_ref="member")
+    workspace_member = relationship("WorkspaceMember", backref="member")
 
 
 class WorkspaceMember(AbstractBase):

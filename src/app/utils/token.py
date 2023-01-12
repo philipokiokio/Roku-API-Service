@@ -1,5 +1,5 @@
 from itsdangerous.url_safe import URLSafeSerializer
-from app.config import auth_settings
+from src.app.config import auth_settings
 
 
 tokens = URLSafeSerializer(f"{auth_settings.access_secret_key}")
