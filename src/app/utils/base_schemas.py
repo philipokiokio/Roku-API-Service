@@ -34,4 +34,3 @@ class User(AbstractModel):
     first_name: str
     last_name: str
     email: str
-    role: str

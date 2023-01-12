@@ -1,4 +1,5 @@
 from src.app.utils.base_schemas import AbstractModel, ResponseModel, RoleOptions, User
+from pydantic import EmailStr
 from typing import List, Optional
 
 
@@ -10,6 +11,7 @@ class WorkspaceResponse(WorkspaceCreate):
     id: int
     slug: str
     creator: User
+    members: List[User] | None
 
 
 class MessageWorkspaceResp(ResponseModel):
@@ -33,8 +35,10 @@ class Workspace(AbstractModel):
     slug: str
 
 
-class WorkspaceMemberResponse(User):
+class WorkspaceMemberResponse(AbstractModel):
     workspace: Workspace
+    user: User
+    role: str
 
 
 class MessageWorkspaceMembResp(ResponseModel):
@@ -43,3 +47,11 @@ class MessageWorkspaceMembResp(ResponseModel):
 
 class MessageListWorkspaceMemResp(ResponseModel):
     data: List[WorkspaceMemberResponse]
+
+
+class JoinWorkspace(AbstractModel):
+    email: EmailStr
+
+
+class UpdateWorkspaceMember(AbstractModel):
+    role: RoleOptions
