@@ -140,7 +140,7 @@ class WorkspaceService:
 
     def workspace_link_invite(self, slug: str, role: RoleOptions, request: Request):
 
-        workspace = self.get_workspace(slug)
+        workspace = self.workspace_repo.get_workspace(slug)
         self.workspace_check(workspace)
 
         token = gen_token(workspace.slug)
@@ -170,14 +170,21 @@ class WorkspaceService:
         }
         return resp
 
-    def get_workspace_member_check(self, user_id: int, workspace_id: int):
+    def get_workspace_member_check(self, id: int, workspace_id: int):
 
-        return self.workspace_member_repo.get_workspace_member(workspace_id, user_id)
+        return self.workspace_member_repo.get_workspace_member(workspace_id, id)
 
     def workspace_member_check(self, workspace_member):
         if not workspace_member:
             raise HTTPException(
                 detail="User is not a member of the workspace",
+                status_code=status.HTTP_404_NOT_FOUND,
+            )
+
+    def workspace_member_check_(self, workspace_member):
+        if workspace_member:
+            raise HTTPException(
+                detail="User is a member of the workspace",
                 status_code=status.HTTP_404_NOT_FOUND,
             )
 
@@ -209,13 +216,15 @@ class WorkspaceService:
                 status_code=status.HTTP_404_NOT_FOUND,
             )
 
-        workspace_mem_check = self.get_workspace_member_check(
-            user_check.id, workspace_check.id
+        workspace_mem_check = (
+            self.workspace_member_repo.get_workspace_member_by_user_id(
+                workspace_check.id, user_check.id
+            )
         )
-        self.workspace_member_check(workspace_mem_check)
+        self.workspace_member_check_(workspace_mem_check)
 
         workspace_member_data = {
-            "user_id": user_check.id,
+            "member_id": user_check.id,
             "role": role_tok_data,
             "workspace_id": workspace_check.id,
         }
@@ -223,10 +232,11 @@ class WorkspaceService:
         workspace_member = self.workspace_member_repo.create_workspace_member(
             workspace_member_data
         )
+        workspace_member_ = self.member_orm_call(workspace_member)
 
         resp = {
             "message": "User Joined Workspace",
-            "data": workspace_member,
+            "data": workspace_member_,
             "status": status.HTTP_201_CREATED,
         }
         return resp

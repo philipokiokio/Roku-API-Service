@@ -41,6 +41,7 @@ class Workspace(AbstractModel):
 
 
 class WorkspaceMemberResponse(AbstractModel):
+    id: int
     workspace: Workspace
     user: User
     role: str
@@ -60,3 +61,7 @@ class JoinWorkspace(AbstractModel):
 
 class UpdateWorkspaceMember(AbstractModel):
     role: RoleOptions
+
+
+class InviteWorkspaceResponse(ResponseModel):
+    data: str

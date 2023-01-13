@@ -3,7 +3,7 @@ from src.workspace.workspace_service import workspace_service
 from src.workspace import schemas
 from src.auth.oauth import get_current_user
 from src.auth.models import User
-
+from starlette.requests import Request
 
 workspace_router = APIRouter(prefix="/api/v1/workspace", tags={"workspace"})
 
@@ -79,15 +79,18 @@ def workspace_delete(
 @workspace_router.post(
     "/{workspace_slug}/invite-link/gen/",
     status_code=status.HTTP_200_OK,
-    response_model=schemas.MessageWorkspaceResp,
+    response_model=schemas.InviteWorkspaceResponse,
 )
 def generate_workspace_invite_link(
     workspace_slug: str,
+    request: Request,
     role_data: schemas.UpdateWorkspaceMember,
     current_user: User = Depends(get_current_user),
 ):
 
-    resp = workspace_service.workspace_link_invite(workspace_slug, role_data.role)
+    resp = workspace_service.workspace_link_invite(
+        workspace_slug, role_data.role, request
+    )
 
     return resp
 

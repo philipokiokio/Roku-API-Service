@@ -23,12 +23,12 @@ class WorkspaceRepo(BaseRepo):
 
         user_workspace = (
             self.base_query()
-            .filter(Workspace.workspace_member.user_id.has(id=user_id))
+            .filter(Workspace.workspace_member.any(member_id=user_id))
             .all()
         )
         workspace_count = (
             self.base_query()
-            .filter(Workspace.workspace_member.user_id.has(id=user_id))
+            .filter(Workspace.workspace_member.any(member_id=user_id))
             .count()
         )
         return user_workspace, workspace_count
@@ -60,6 +60,16 @@ class WorkspaceMemberRepo(BaseRepo):
             .filter(
                 WorkspaceMember.workspace_id == workspace_id,
                 WorkspaceMember.id == id,
+            )
+            .first()
+        )
+
+    def get_workspace_member_by_user_id(self, workspace_id: int, user_id: int):
+        return (
+            self.base_query()
+            .filter(
+                WorkspaceMember.workspace_id == workspace_id,
+                WorkspaceMember.member_id == user_id,
             )
             .first()
         )
