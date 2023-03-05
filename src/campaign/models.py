@@ -1,6 +1,19 @@
-from . import AbstractBase
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, Date, text
+from sqlalchemy import (
+    ARRAY,
+    JSON,
+    Boolean,
+    Column,
+    Date,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    text,
+)
+from sqlalchemy.ext.mutable import MutableDict, MutableList
 from sqlalchemy.orm import relationship
+
+from . import AbstractBase
 
 
 class Campaign(AbstractBase):
@@ -22,23 +35,50 @@ class Campaign(AbstractBase):
     Workspace = relationship("Workspace")
 
 
-class CampaignRefferal(AbstractBase):
-    __tablename__ = "campaign_refferal"
-
+class Event(AbstractBase):
+    __tablename__ = "campaign_events"
+    name = Column(String, nullable=False)
+    slug = Column(String, nullable=False)
     campaign_id = Column(
         Integer, ForeignKey("campaign.id", ondelete="CASCADE"), nullable=False
+    )
+    has_rewards = Column(Boolean, nullable=False)
+    campaign = relationship("Campaign")
+
+
+class EventRewards(AbstractBase):
+    __tablename__ = "event_rewards"
+    event_id = Column(Integer, ForeignKey("campaign_events.id", ondelete="CASCADE"))
+    rewards = Column(
+        MutableList.as_mutable(ARRAY(MutableDict.as_mutable(JSON))), nullable=False
+    )
+    event = relationship("events")
+    pass
+
+
+class EventRefferal(AbstractBase):
+    __tablename__ = "event_refferal"
+
+    campaign_event_id = Column(
+        Integer, ForeignKey("campaign_events.id", ondelete="CASCADE"), nullable=False
     )
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     count = Column(Integer, nullable=False)
+    refferal_code = Column(String, nullable=False)
     fraud_flag = Column(Boolean, server_default=text("false"))
-    campaign = relationship("Campaign")
+    fraud_counter = Column(Integer, nullable=False)
+    campaign = relationship("Event")
 
 
-class CampaignRefEmail(AbstractBase):
-    __tablename__ = "campaign_ref_email"
+class Coupon(AbstractBase):
+    __tablename__ = "coupons"
     campaign_id = Column(
         Integer, ForeignKey("campaign.id", ondelete="CASCADE"), nullable=False
     )
-    email = Column(String, nullable=False)
+    slug = Column(String, nullable=False)
+    coupon = Column(String, nullable=False)
+    value_off = Column(Float, nullable=False)
+    count_made = Column(Integer, nullable=False)
+
     campaign = relationship("Campaign")

@@ -1,12 +1,25 @@
 # from app.utils.db_utils import get_db
-from src.app.database import SessionLocal
-from sqlalchemy.orm import Session
 from uuid import uuid4
+
+from sqlalchemy.orm import Session
+
+from src.app.database import SessionLocal
 
 
 class BaseRepo:
     def __init__(self):
-        self.db: Session = SessionLocal()
+        self.db: Session = self.get_db.__next__()
+
+    @property
+    def get_db(self):
+        session = SessionLocal()
+        try:
+            yield session
+        except:
+            session.rollback()
+        finally:
+            session.close()
+        SessionLocal.remove()
 
     def slugger(self, name):
         next = uuid4()
@@ -14,4 +27,27 @@ class BaseRepo:
         return slug
 
 
-base_repo = BaseRepo()
+class BaseActionMixinRepo(BaseRepo):
+    def __init__(self, model):
+        self.model = model
+        super().__init__()
+
+    @property
+    def base_query(self):
+        return self.db.query(self.model)
+
+    def create(self, create_dict: dict):
+        new_data = self.model(**create_dict)
+        self.db.add(new_data)
+        self.db.commit()
+        self.db.refresh(new_data)
+        return new_data
+
+    def update(self, data):
+        self.db.commit()
+        self.db.refresh(data)
+        return data
+
+    def delete(self, data):
+        self.db.delete(data)
+        self.db.commit()
