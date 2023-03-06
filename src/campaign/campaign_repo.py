@@ -1,3 +1,5 @@
+from typing import Union
+
 from src.app.utils.base_repo_utils import BaseActionMixinRepo, BaseRepo
 from src.campaign.models import Campaign, Coupon, Event, EventRefferal
 
@@ -7,24 +9,39 @@ class CampaignRepo(BaseRepo):
     def base_query(self):
         return self.db.query(Campaign)
 
+    def campaign_check(self, workspace_id: int, campaign_name: str):
+        return self.base_query.filter(
+            Campaign.workspace_id == workspace_id, Campaign.name.ilike(campaign_name)
+        ).first()
+
     def get_campaign(self, slug: str):
         return self.base_query.filter(Campaign.slug == slug).first()
+
+    def get_by_workspace(self, workspace_id: int) -> Union[Campaign, None]:
+        return self.base_query.filter(Campaign.workspace_id == workspace_id).all()
+
+    def by_workspace__slug(
+        self, workspaace_id: int, slug: str
+    ) -> Union[Campaign, None]:
+        return self.base_query.filter(
+            Campaign.workspace_id == workspaace_id, Campaign.slug == slug
+        ).first()
 
     # def get_campaign(self, user_id: int):
     #     return self.base_query.filter(Campaign.slug == slug)
 
-    def create_campaign(self, create_campaign) -> Campaign:
+    def create(self, create_campaign) -> Campaign:
         new_campaign = Campaign(**create_campaign.dict())
         self.db.add(new_campaign)
         self.db.commit()
         self.db.refresh(new_campaign)
         return new_campaign
 
-    def delete_campaign(self, campaign: Campaign):
+    def delete(self, campaign: Campaign):
         self.db.delete(campaign)
         self.db.commit()
 
-    def update_campaign(self, campaign: Campaign):
+    def update(self, campaign: Campaign):
         self.db.commit()
         self.db.refresh(campaign)
         return campaign

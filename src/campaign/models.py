@@ -32,7 +32,9 @@ class Campaign(AbstractBase):
     end_of_day_report = Column(Boolean, nullable=False, server_default=text("false"))
     created_by = Column(Integer, ForeignKey("user.id", ondelete="NULL"), nullable=True)
     creator = relationship("User")
-    Workspace = relationship("Workspace")
+    workspace = relationship("Workspace")
+    event = relationship("Event", back_populates="campaign")
+    coupon = relationship("Coupon", back_populates="campaign")
 
 
 class Event(AbstractBase):
@@ -43,6 +45,8 @@ class Event(AbstractBase):
         Integer, ForeignKey("campaign.id", ondelete="CASCADE"), nullable=False
     )
     has_rewards = Column(Boolean, nullable=False)
+    created_by = Column(Integer, ForeignKey("user.id", ondelete="NULL"), nullable=True)
+    creator = relationship("User")
     campaign = relationship("Campaign")
 
 
@@ -80,5 +84,6 @@ class Coupon(AbstractBase):
     coupon = Column(String, nullable=False)
     value_off = Column(Float, nullable=False)
     count_made = Column(Integer, nullable=False)
-
+    created_by = Column(Integer, ForeignKey("user.id", ondelete="NULL"), nullable=True)
+    creator = relationship("User")
     campaign = relationship("Campaign")

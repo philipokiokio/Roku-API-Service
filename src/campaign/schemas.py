@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from pydantic import EmailStr
+from pydantic import EmailStr, confloat
 
 from src.app.utils.base_schemas import (
     AbstractModel,
@@ -12,6 +12,11 @@ from src.app.utils.base_schemas import (
 )
 
 
+class CouponCampaignCreate(AbstractModel):
+    coupon: str
+    value_off: confloat(le=100.00, ge=0.00)
+
+
 # Campaign DTO's
 class CampaignCreate(AbstractModel):
     name: str
@@ -20,6 +25,8 @@ class CampaignCreate(AbstractModel):
     campaign_type: CampaignType
     status: CampaignStatus
     end_of_day_report: Optional[bool]
+    event: Optional[str]
+    coupon: Optional[CouponCampaignCreate]
 
 
 class CampaignUpdate(AbstractModel):
@@ -31,8 +38,15 @@ class CampaignUpdate(AbstractModel):
     end_of_day_report: Optional[bool]
 
 
-class CampaignMember(User):
-    pass
+class Workspace(AbstractModel):
+    name: str
+    slug: str
+
+
+class EventCamp(AbstractModel):
+    name: str
+    slug: str
+    has_rewards: bool
 
 
 class CampaignRepsonse(CampaignCreate):
@@ -40,7 +54,9 @@ class CampaignRepsonse(CampaignCreate):
     slug: str
     created_by: User
     api_key: str
-    members: List[CampaignMember]
+    workspace: Workspace
+    coupon: Optional[List["CouponResp"]]
+    event: Optional[List[EventCamp]]
     date_created: datetime
 
 

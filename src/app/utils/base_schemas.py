@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from enum import Enum
+
+from pydantic import BaseModel
 
 
 class AbstractModel(BaseModel):
@@ -14,7 +15,7 @@ class ResponseModel(AbstractModel):
 
 
 class CampaignType(Enum):
-    sign_up = "SignUp"
+    coupon = "Coupon"
     event = "Event"
 
 
